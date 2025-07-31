@@ -1,7 +1,8 @@
-from flask import Flask, request, render_template_string, redirect, url_for
+from flask import Flask, request, render_template_string, redirect, url_for, session
 import uuid
 
 app = Flask(__name__)
+app.secret_key = 'flashpaste-secret-key'
 clipboard_content = ""
 shared_clips = {}
 
@@ -19,6 +20,7 @@ def index():
         <form method="post" action="/share">
             <input type="hidden" name="content" value="{{ content }}">
             <label><input type="checkbox" name="burn_after_reading" value="1"> 阅后即焚</label>
+            <input type="text" name="password" placeholder="访问密码（可选）">
             <button type="submit">生成分享链接</button>
         </form>
         <p>当前内容：</p>
@@ -32,17 +34,43 @@ def index():
 def share():
     content = request.form.get('content', '')
     burn = request.form.get('burn_after_reading', '') == '1'
+    password = request.form.get('password', '').strip()
     share_id = str(uuid.uuid4())
-    shared_clips[share_id] = {'content': content, 'burn': burn}
+    shared_clips[share_id] = {'content': content, 'burn': burn, 'password': password}
     return redirect(url_for('index', share_url=url_for('shared', share_id=share_id, _external=True)))
 
-@app.route('/s/<share_id>')
+@app.route('/s/<share_id>', methods=['GET', 'POST'])
 def shared(share_id):
     clip = shared_clips.get(share_id, None)
     if clip is None:
         return "分享内容不存在或已失效。"
-    content = clip['content']
-    burn = clip['burn']
+    password = clip.get('password', '')
+    burn = clip.get('burn', False)
+    content = clip.get('content', '')
+    # 密码校验
+    if password:
+        if request.method == 'POST':
+            input_pwd = request.form.get('password', '')
+            if input_pwd == password:
+                session['access_'+share_id] = True
+            else:
+                return render_template_string('''
+                    <h2>请输入访问密码</h2>
+                    <form method="post">
+                        <input type="password" name="password" placeholder="访问密码">
+                        <button type="submit">提交</button>
+                    </form>
+                    <p style="color:red;">密码错误，请重试。</p>
+                ''')
+        if not session.get('access_'+share_id, False):
+            return render_template_string('''
+                <h2>请输入访问密码</h2>
+                <form method="post">
+                    <input type="password" name="password" placeholder="访问密码">
+                    <button type="submit">提交</button>
+                </form>
+            ''')
+    # 阅后即焚
     if burn:
         shared_clips.pop(share_id, None)
         burn_tip = '<p style="color:red;">该内容已被销毁，刷新页面将无法再次查看。</p>'
