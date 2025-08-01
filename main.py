@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template_string, redirect, url_for, session
+from flask import Flask, request, render_template, redirect, url_for, session
 import uuid
 
 app = Flask(__name__)
@@ -11,24 +11,7 @@ def index():
     global clipboard_content
     if request.method == 'POST':
         clipboard_content = request.form.get('content', '')
-    return render_template_string('''
-        <h2>FlashPaste 在线剪贴板</h2>
-        <form method="post">
-            <textarea name="content" rows="10" cols="50">{{ content }}</textarea><br>
-            <button type="submit">保存</button>
-        </form>
-        <form method="post" action="/share">
-            <input type="hidden" name="content" value="{{ content }}">
-            <label><input type="checkbox" name="burn_after_reading" value="1"> 阅后即焚</label>
-            <input type="text" name="password" placeholder="访问密码（可选）">
-            <button type="submit">生成分享链接</button>
-        </form>
-        <p>当前内容：</p>
-        <pre>{{ content }}</pre>
-        {% if share_url %}
-        <p>分享链接：<a href="{{ share_url }}" target="_blank">{{ share_url }}</a></p>
-        {% endif %}
-    ''', content=clipboard_content, share_url=request.args.get('share_url'))
+    return render_template('index.html', content=clipboard_content, share_url=request.args.get('share_url'))
 
 @app.route('/share', methods=['POST'])
 def share():
@@ -54,34 +37,16 @@ def shared(share_id):
             if input_pwd == password:
                 session['access_'+share_id] = True
             else:
-                return render_template_string('''
-                    <h2>请输入访问密码</h2>
-                    <form method="post">
-                        <input type="password" name="password" placeholder="访问密码">
-                        <button type="submit">提交</button>
-                    </form>
-                    <p style="color:red;">密码错误，请重试。</p>
-                ''')
+                return render_template('password.html', error=True)
         if not session.get('access_'+share_id, False):
-            return render_template_string('''
-                <h2>请输入访问密码</h2>
-                <form method="post">
-                    <input type="password" name="password" placeholder="访问密码">
-                    <button type="submit">提交</button>
-                </form>
-            ''')
+            return render_template('password.html', error=False)
     # 阅后即焚
     if burn:
         shared_clips.pop(share_id, None)
-        burn_tip = '<p style="color:red;">该内容已被销毁，刷新页面将无法再次查看。</p>'
+        burn_tip = '该内容已被销毁，刷新页面将无法再次查看。'
     else:
         burn_tip = ''
-    return render_template_string('''
-        <h2>FlashPaste 分享内容{% if burn %}（阅后即焚）{% endif %}</h2>
-        <pre>{{ content }}</pre>
-        <a href="/">返回首页</a>
-        {{ burn_tip|safe }}
-    ''', content=content, burn=burn, burn_tip=burn_tip)
+    return render_template('shared.html', content=content, burn=burn, burn_tip=burn_tip)
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>FlashPaste 在线剪贴板</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h2>FlashPaste 在线剪贴板</h2>
+    <form method="post">
+        <textarea name="content" rows="10" cols="50">{{ content }}</textarea><br>
+        <button type="submit">保存</button>
+    </form>
+    <form method="post" action="/share">
+        <input type="hidden" name="content" value="{{ content }}">
+        <label><input type="checkbox" name="burn_after_reading" value="1"> 阅后即焚</label>
+        <input type="text" name="password" placeholder="访问密码（可选）">
+        <button type="submit">生成分享链接</button>
+    </form>
+    <p>当前内容：</p>
+    <pre>{{ content }}</pre>
+    {% if share_url %}
+    <p>分享链接：<a href="{{ share_url }}" target="_blank">{{ share_url }}</a></p>
+    {% endif %}
+</body>
+</html>

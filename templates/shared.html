@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>FlashPaste 分享内容</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h2>FlashPaste 分享内容{% if burn %}（阅后即焚）{% endif %}</h2>
+    <pre>{{ content }}</pre>
+    <a href="/" class="center-link">返回首页</a>
+    {% if burn_tip %}
+    <p style="color:red;">{{ burn_tip }}</p>
+    {% endif %}
+</body>
+</html>
