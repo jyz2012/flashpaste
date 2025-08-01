@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>我的分享 - FlashPaste</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div style="text-align:center;">
+        <h2>我的分享</h2>
+        <ul style="display:inline-block;text-align:left;">
+        {% for share_id, content in shares %}
+            <li><a href="/s/{{ share_id }}" target="_blank">{{ content[:30] }}{% if content|length > 30 %}...{% endif %}</a></li>
+        {% else %}
+            <li>暂无分享内容。</li>
+        {% endfor %}
+        </ul>
+        <div style="margin-bottom:10px;"><a href="/">返回首页</a></div>
+    </div>
+</body>
+</html>

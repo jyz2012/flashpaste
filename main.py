@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, redirect, url_for, session
 import uuid
 import sqlite3
 import os
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = 'flashpaste-secret-key'
@@ -15,7 +16,14 @@ def init_db():
             share_id TEXT PRIMARY KEY,
             content TEXT,
             burn INTEGER,
-            password TEXT
+            password TEXT,
+            user_id INTEGER
+        )''')
+        # 新增用户表
+        c.execute('''CREATE TABLE users (
+            user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL
         )''')
         conn.commit()
         conn.close()
@@ -35,10 +43,11 @@ def share():
     burn = request.form.get('burn_after_reading', '') == '1'
     password = request.form.get('password', '').strip()
     share_id = str(uuid.uuid4())
+    user_id = session.get('user_id')
     conn = sqlite3.connect(DATABASE)
     c = conn.cursor()
-    c.execute('INSERT INTO shared_clips (share_id, content, burn, password) VALUES (?, ?, ?, ?)',
-              (share_id, content, int(burn), password))
+    c.execute('INSERT INTO shared_clips (share_id, content, burn, password, user_id) VALUES (?, ?, ?, ?, ?)',
+              (share_id, content, int(burn), password, user_id))
     conn.commit()
     conn.close()
     return redirect(url_for('index', share_url=url_for('shared', share_id=share_id, _external=True)))
@@ -75,6 +84,60 @@ def shared(share_id):
         burn_tip = ''
     conn.close()
     return render_template('shared.html', content=content, burn=burn, burn_tip=burn_tip)
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
+        if not username or not password:
+            return render_template('register.html', error='用户名和密码不能为空')
+        conn = sqlite3.connect(DATABASE)
+        c = conn.cursor()
+        try:
+            c.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, generate_password_hash(password)))
+            conn.commit()
+        except sqlite3.IntegrityError:
+            conn.close()
+            return render_template('register.html', error='用户名已存在')
+        conn.close()
+        return redirect(url_for('login'))
+    return render_template('register.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
+        conn = sqlite3.connect(DATABASE)
+        c = conn.cursor()
+        c.execute('SELECT user_id, password FROM users WHERE username=?', (username,))
+        row = c.fetchone()
+        conn.close()
+        if row and check_password_hash(row[1], password):
+            session['user_id'] = row[0]
+            session['username'] = username
+            return redirect(url_for('index'))
+        else:
+            return render_template('login.html', error='用户名或密码错误')
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    session.pop('username', None)
+    return redirect(url_for('index'))
+
+@app.route('/myshares')
+def myshares():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    conn = sqlite3.connect(DATABASE)
+    c = conn.cursor()
+    c.execute('SELECT share_id, content FROM shared_clips WHERE user_id=?', (session['user_id'],))
+    shares = c.fetchall()
+    conn.close()
+    return render_template('myshares.html', shares=shares)
 
 if __name__ == "__main__":
     app.run(debug=True)

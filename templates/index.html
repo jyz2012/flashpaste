@@ -7,6 +7,11 @@
 </head>
 <body>
     <h2>FlashPaste 在线剪贴板</h2>
+    {% if session.username %}
+    <p>欢迎，{{ session.username }}！<a href="/logout">登出</a> | <a href="/myshares">我的分享</a></p>
+    {% else %}
+    <p><a href="/login">登录</a> | <a href="/register">注册</a></p>
+    {% endif %}
     <form method="post">
         <textarea name="content" rows="10" cols="50">{{ content }}</textarea><br>
         <button type="submit">保存</button>
