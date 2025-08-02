@@ -22,10 +22,12 @@
         <input type="text" name="password" placeholder="访问密码（可选）">
         <button type="submit">生成分享链接</button>
     </form>
-    <p>当前内容：</p>
-    <pre>{{ content }}</pre>
-    {% if share_url %}
-    <p>分享链接：<a href="{{ share_url }}" target="_blank">{{ share_url }}</a></p>
-    {% endif %}
+    <form>
+        <p>当前内容：</p>
+        <pre>{{ content }}</pre>
+        {% if share_url %}
+        <p>分享链接：<a href="{{ share_url }}" target="_blank">{{ share_url }}</a></p>
+        {% endif %}
+    </form>
 </body>
 </html>
