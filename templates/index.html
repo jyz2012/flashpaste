@@ -4,8 +4,16 @@
     <meta charset="UTF-8">
     <title>FlashPaste 在线剪贴板</title>
     <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/theme.js"></script>
 </head>
 <body>
+    <div class="theme-switch-wrapper">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox" />
+            <div class="slider"></div>
+        </label>
+        <em>切换暗黑模式</em>
+    </div>
     <h2>FlashPaste 在线剪贴板</h2>
     {% if session.username %}
     <p>欢迎，{{ session.username }}！<a href="/logout">登出</a> | <a href="/myshares">我的分享</a></p>

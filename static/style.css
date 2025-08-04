@@ -1,13 +1,171 @@
-body { font-family: 'Segoe UI', 'Microsoft YaHei', Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 0; }
-h2 { color: #2c3e50; text-align: center; margin-top: 40px; }
-form { background: #fff; max-width: 500px; margin: 20px auto; padding: 24px 32px 16px 32px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
-textarea { width: 100%; font-size: 1.1em; border-radius: 4px; border: 1px solid #ccc; padding: 8px; margin-bottom: 12px; }
-button { background: #3498db; color: #fff; border: none; border-radius: 4px; padding: 8px 20px; font-size: 1em; cursor: pointer; transition: background 0.2s; }
-button:hover { background: #217dbb; }
-pre { background: #f4f4f4; border-radius: 4px; padding: 12px; max-width: 500px; margin: 16px auto; font-size: 1.1em; }
-input[type="text"], input[type="password"] { border: 1px solid #ccc; border-radius: 4px; padding: 6px 10px; font-size: 1em; margin-bottom: 10px; width: 70%; }
+:root {
+    --bg-color: #f7f7f7;
+    --text-color: #333;
+    --heading-color: #2c3e50;
+    --form-bg: #fff;
+    --form-shadow: rgba(0,0,0,0.07);
+    --input-border: #ccc;
+    --button-bg: #3498db;
+    --button-hover: #217dbb;
+    --button-text: #fff;
+    --pre-bg: #f4f4f4;
+    --link-color: #3498db;
+    --error-color: #e74c3c;
+}
+
+[data-theme="dark"] {
+    --bg-color: #1a1a1a;
+    --text-color: #e0e0e0;
+    --heading-color: #f0f0f0;
+    --form-bg: #2a2a2a;
+    --form-shadow: rgba(0,0,0,0.2);
+    --input-border: #444;
+    --button-bg: #2980b9;
+    --button-hover: #3498db;
+    --button-text: #fff;
+    --pre-bg: #333;
+    --link-color: #5dade2;
+    --error-color: #e74c3c;
+}
+
+body { 
+    font-family: 'Segoe UI', 'Microsoft YaHei', Arial, sans-serif; 
+    background: var(--bg-color); 
+    color: var(--text-color);
+    margin: 0; 
+    padding: 0; 
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+h2 { color: var(--heading-color); text-align: center; margin-top: 40px; }
+
+form { 
+    background: var(--form-bg); 
+    max-width: 500px; 
+    margin: 20px auto; 
+    padding: 24px 32px 16px 32px; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 8px var(--form-shadow); 
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+textarea { 
+    width: 100%; 
+    font-size: 1.1em; 
+    border-radius: 4px; 
+    border: 1px solid var(--input-border); 
+    padding: 8px; 
+    margin-bottom: 12px; 
+    background: var(--form-bg);
+    color: var(--text-color);
+    transition: background 0.3s ease, color 0.3s ease, border 0.3s ease;
+}
+
+button { 
+    background: var(--button-bg); 
+    color: var(--button-text); 
+    border: none; 
+    border-radius: 4px; 
+    padding: 8px 20px; 
+    font-size: 1em; 
+    cursor: pointer; 
+    transition: background 0.2s; 
+}
+
+button:hover { background: var(--button-hover); }
+
+pre { 
+    background: var(--pre-bg); 
+    border-radius: 4px; 
+    padding: 12px; 
+    max-width: 500px; 
+    margin: 16px auto; 
+    font-size: 1.1em; 
+    color: var(--text-color);
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+input[type="text"], input[type="password"] { 
+    border: 1px solid var(--input-border); 
+    border-radius: 4px; 
+    padding: 6px 10px; 
+    font-size: 1em; 
+    margin-bottom: 10px; 
+    width: 70%; 
+    background: var(--form-bg);
+    color: var(--text-color);
+    transition: background 0.3s ease, color 0.3s ease, border 0.3s ease;
+}
+
 label { margin-right: 10px; }
-a { color: #3498db; text-decoration: none; }
+
+a { color: var(--link-color); text-decoration: none; }
+
 a:hover { text-decoration: underline; }
+
 p { text-align: center; }
+
 .center-link { display: block; text-align: center; margin: 20px auto; font-size: 1.1em; }
+
+/* 主题切换按钮样式 */
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px auto;
+}
+
+.theme-switch {
+    display: inline-block;
+    height: 24px;
+    position: relative;
+    width: 48px;
+}
+
+.theme-switch input {
+    display: none;
+}
+
+.slider {
+    background-color: #ccc;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    background-color: #fff;
+    bottom: 4px;
+    content: "";
+    height: 16px;
+    left: 4px;
+    position: absolute;
+    transition: .4s;
+    width: 16px;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+    transform: translateX(24px);
+}
+
+.theme-switch-wrapper em {
+    margin-left: 10px;
+    font-size: 0.9em;
+}
+
+/* 错误信息样式 */
+.error-message {
+    color: var(--error-color);
+    text-align: center;
+    margin-top: 10px;
+}

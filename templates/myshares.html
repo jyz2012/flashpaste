@@ -4,15 +4,23 @@
     <meta charset="UTF-8">
     <title>我的分享 - FlashPaste</title>
     <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/theme.js"></script>
 </head>
 <body>
+    <div class="theme-switch-wrapper">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox" />
+            <div class="slider"></div>
+        </label>
+        <em>切换暗黑模式</em>
+    </div>
     <div style="text-align:center;">
         <h2>我的分享</h2>
         <div style="margin-bottom:10px;"><a href="/">返回首页</a></div>
         <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:16px;">
         {% for share_id, content in shares %}
-            <div style="background:#fff;border:1px solid #eee;border-radius:8px;box-shadow:0 2px 8px #eee;padding:16px;width:260px;display:flex;flex-direction:column;align-items:flex-start;">
-                <a href="/s/{{ share_id }}" target="_blank" style="font-weight:bold;color:#007bff;word-break:break-all;">
+            <div style="background:var(--form-bg);border:1px solid var(--input-border);border-radius:8px;box-shadow:0 2px 8px var(--form-shadow);padding:16px;width:260px;display:flex;flex-direction:column;align-items:flex-start;">
+                <a href="/s/{{ share_id }}" target="_blank" style="font-weight:bold;color:var(--link-color);word-break:break-all;">
                     <div style="margin-top:8px;word-break:break-all;">
                         {{ content[:40] }}{% if content|length > 40 %}...{% endif %}
                     </div>
