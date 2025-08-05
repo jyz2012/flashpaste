@@ -3,8 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <title>FlashPaste 在线剪贴板</title>
+
+
+    
     <link rel="stylesheet" href="/static/style.css">
+    
+    <link id="highlight-theme-default" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <link id="highlight-theme-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" disabled>
+    <!--您可以添加更多主题，并默认设置为 disabled -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="/static/theme.js"></script>
+
+
+
+    
 </head>
 <body>
     <div class="theme-switch-wrapper">
@@ -32,7 +45,8 @@
     </form>
     <form>
         <p>当前内容：</p>
-        <pre>{{ content }}</pre>
+        <pre><code>{{ content }}</code></pre>
+        <script>hljs.highlightAll();</script>
         {% if share_url %}
         <p>分享链接：<a href="{{ share_url }}" target="_blank">{{ share_url }}</a></p>
         {% endif %}

@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>FlashPaste 分享内容</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link id="highlight-theme-default" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <link id="highlight-theme-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" disabled>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="/static/theme.js"></script>
 </head>
 <body>
@@ -15,7 +18,8 @@
         <em>切换暗黑模式</em>
     </div>
     <h2>FlashPaste 分享内容{% if burn %}（阅后即焚）{% endif %}</h2>
-    <pre>{{ content }}</pre>
+    <pre><code>{{ content }}</code></pre>
+    <script>hljs.highlightAll();</script>
     <a href="/" class="center-link">返回首页</a>
     {% if burn_tip %}
     <p class="error-message">{{ burn_tip }}</p>

@@ -11,6 +11,7 @@
     --pre-bg: #f4f4f4;
     --link-color: #3498db;
     --error-color: #e74c3c;
+    --code-font: 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
 }
 
 [data-theme="dark"] {
@@ -26,6 +27,7 @@
     --pre-bg: #333;
     --link-color: #5dade2;
     --error-color: #e74c3c;
+    --code-font: 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
 }
 
 body { 
@@ -83,6 +85,36 @@ pre {
     font-size: 1.1em; 
     color: var(--text-color);
     transition: background 0.3s ease, color 0.3s ease;
+    overflow-x: auto;
+}
+
+code {
+    font-family: var(--code-font);
+    line-height: 1.5;
+    tab-size: 4;
+}
+
+/* 自定义代码高亮主题样式 */
+/* .hljs {
+    background: var(--pre-bg) !important;
+    color: var(--text-color) !important;
+} */
+
+
+/* 确保代码块内的滚动条样式与主题一致 */
+pre::-webkit-scrollbar {
+    height: 8px;
+    background-color: var(--pre-bg);
+}
+
+pre::-webkit-scrollbar-thumb {
+    background-color: var(--input-border);
+    border-radius: 4px;
+}
+
+pre::-webkit-scrollbar-track {
+    background-color: var(--pre-bg);
+    border-radius: 4px;
 }
 
 input[type="text"], input[type="password"] { 
