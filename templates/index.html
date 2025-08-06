@@ -103,6 +103,46 @@
                 }
             });
         });
+        
+        // 复制分享链接功能
+        function copyShareUrl() {
+            const input = document.getElementById('share-url-input');
+            const status = document.getElementById('copy-status');
+            
+            if (navigator.clipboard && window.isSecureContext) {
+                // 使用现代 Clipboard API
+                navigator.clipboard.writeText(input.value).then(() => {
+                    showCopyStatus('✓ 链接已复制到剪贴板');
+                }).catch(() => {
+                    fallbackCopyText(input);
+                });
+            } else {
+                // 降级方案
+                fallbackCopyText(input);
+            }
+        }
+        
+        function fallbackCopyText(input) {
+            try {
+                input.select();
+                input.setSelectionRange(0, 99999); // 移动端兼容
+                document.execCommand('copy');
+                showCopyStatus('✓ 链接已复制到剪贴板');
+            } catch (err) {
+                showCopyStatus('✗ 复制失败，请手动复制', true);
+            }
+        }
+        
+        function showCopyStatus(message, isError = false) {
+            const status = document.getElementById('copy-status');
+            if (status) {
+                status.textContent = message;
+                status.style.color = isError ? '#e74c3c' : '#27ae60';
+                setTimeout(() => {
+                    status.textContent = '';
+                }, 3000);
+            }
+        }
     </script>
 
 
@@ -154,7 +194,12 @@
     {% if share_url %}
     <form>
         <h3 style="margin-top: 0; color: var(--text-color);">分享链接已生成：</h3>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <input type="text" id="share-url-input" value="{{ share_url }}" readonly style="flex: 1; padding: 8px; border: 1px solid var(--input-border); border-radius: 4px; background: var(--form-bg); color: var(--text-color); font-size: 14px;">
+            <button type="button" onclick="copyShareUrl()" style="background: var(--button-bg); color: var(--button-text); border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; white-space: nowrap;">复制链接</button>
+        </div>
         <p><a href="{{ share_url }}" target="_blank" style="word-break: break-all; color: var(--link-color);">{{ share_url }}</a></p>
+        <div id="copy-status" style="color: #27ae60; font-size: 12px; margin-top: 5px;"></div>
     </form>
     {% endif %}
 </body>

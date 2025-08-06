@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>编辑分享 - FlashPaste</title>
+    <title>编辑分享内容 - FlashPaste</title>
     <link rel="stylesheet" href="/static/style.css">
     <script src="/static/theme.js"></script>
 </head>
@@ -16,15 +16,15 @@
         <em>切换暗黑模式</em>
     </div>
     <div style="text-align:center;">
-        <h2>编辑分享</h2>
+        <h2>编辑分享内容</h2>
         <div style="margin-bottom:20px;">
             <a href="/myshares">返回我的分享</a> | <a href="/">返回首页</a>
         </div>
         
-        <form method="post" style="max-width:600px;margin:0 auto;text-align:left;">
+        <form method="post" style="text-align:left;">
             <div style="margin-bottom:15px;">
-                <label for="title" style="display:block;margin-bottom:5px;font-weight:bold;">分享标题:</label>
-                <input type="text" id="title" name="title" value="{{ title }}" placeholder="分享标题（可选）" style="width:100%;padding:8px;border:1px solid var(--input-border);border-radius:4px;background:var(--form-bg);color:var(--text-color);">
+                <label for="title" style="display:block;margin-bottom:5px;font-weight:bold;">标题:</label>
+                <input type="text" id="title" name="title" value="{{ title }}" placeholder="标题（可选）" style="width:100%;padding:8px;border:1px solid var(--input-border);border-radius:4px;background:var(--form-bg);color:var(--text-color);">
             </div>
             
             <div style="margin-bottom:15px;">
@@ -66,11 +66,6 @@
                 <a href="/myshares" style="background:#6c757d;color:white;padding:10px 20px;border-radius:4px;text-decoration:none;font-size:16px;">取消</a>
             </div>
         </form>
-        
-        <div style="margin-top:30px;padding:15px;background:var(--form-bg);border:1px solid var(--input-border);border-radius:8px;max-width:600px;margin-left:auto;margin-right:auto;">
-            <h3>分享链接预览:</h3>
-            <p><a href="/s/{{ share_id }}" target="_blank">{{ request.url_root }}s/{{ share_id }}</a></p>
-        </div>
     </div>
 </body>
 </html>
