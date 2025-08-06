@@ -1,162 +1,20 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlashPaste 在线剪贴板</title>
+{% extends "base.html" %}
 
+{% block title %}FlashPaste 在线剪贴板{% endblock %}
 
-    
-    <link rel="stylesheet" href="/static/style.css">
-    
+{% block extra_css %}
     <link id="highlight-theme-default" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
     <link id="highlight-theme-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" disabled>
     <!--您可以添加更多主题，并默认设置为 disabled -->
+{% endblock %}
 
+{% block extra_js %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="/static/theme.js"></script>
-    <script>
-        // 自动保存功能
-        let autoSaveTimeout;
-        let lastSavedContent = '';
-        let lastSavedTitle = '';
-        
-        function updateShareFormData() {
-            const content = document.getElementById('content-textarea').value;
-            const title = document.getElementById('content-title').value;
-            document.getElementById('share-content').value = content;
-            document.getElementById('share-title').value = title;
-        }
-        
-        function showAutoSaveStatus(message, isError = false) {
-            const status = document.getElementById('auto-save-status');
-            status.textContent = message;
-            status.style.color = isError ? '#e74c3c' : '#27ae60';
-            setTimeout(() => {
-                status.textContent = '';
-            }, 3000);
-        }
-        
-        function autoSave() {
-            const content = document.getElementById('content-textarea').value;
-            const title = document.getElementById('content-title').value;
-            
-            // 检查内容是否有变化
-            if (content === lastSavedContent && title === lastSavedTitle) {
-                return;
-            }
-            
-            // 更新分享表单数据
-            updateShareFormData();
-            
-            // 发送自动保存请求
-            fetch('/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `content=${encodeURIComponent(content)}&title=${encodeURIComponent(title)}`
-            })
-            .then(response => {
-                if (response.ok) {
-                    lastSavedContent = content;
-                    lastSavedTitle = title;
-                    showAutoSaveStatus('✓ 已自动保存');
-                } else {
-                    showAutoSaveStatus('✗ 保存失败', true);
-                }
-            })
-            .catch(error => {
-                showAutoSaveStatus('✗ 保存失败', true);
-            });
-        }
-        
-        function scheduleAutoSave() {
-            clearTimeout(autoSaveTimeout);
-            autoSaveTimeout = setTimeout(autoSave, 2000); // 2秒后自动保存
-        }
-        
-        // 监听内容变化
-        document.addEventListener('DOMContentLoaded', function() {
-            const textarea = document.getElementById('content-textarea');
-            const titleInput = document.getElementById('content-title');
-            
-            // 初始化已保存的内容
-            lastSavedContent = textarea.value;
-            lastSavedTitle = titleInput.value;
-            
-            // 监听输入事件
-            textarea.addEventListener('input', scheduleAutoSave);
-            titleInput.addEventListener('input', scheduleAutoSave);
-            
-            // 监听内容变化，实时更新分享表单
-            textarea.addEventListener('input', updateShareFormData);
-            titleInput.addEventListener('input', updateShareFormData);
-            
-            // 页面离开前保存
-            window.addEventListener('beforeunload', function() {
-                const content = textarea.value;
-                const title = titleInput.value;
-                if (content !== lastSavedContent || title !== lastSavedTitle) {
-                    // 同步保存
-                    navigator.sendBeacon('/', `content=${encodeURIComponent(content)}&title=${encodeURIComponent(title)}`);
-                }
-            });
-        });
-        
-        // 复制分享链接功能
-        function copyShareUrl() {
-            const input = document.getElementById('share-url-input');
-            const status = document.getElementById('copy-status');
-            
-            if (navigator.clipboard && window.isSecureContext) {
-                // 使用现代 Clipboard API
-                navigator.clipboard.writeText(input.value).then(() => {
-                    showCopyStatus('✓ 链接已复制到剪贴板');
-                }).catch(() => {
-                    fallbackCopyText(input);
-                });
-            } else {
-                // 降级方案
-                fallbackCopyText(input);
-            }
-        }
-        
-        function fallbackCopyText(input) {
-            try {
-                input.select();
-                input.setSelectionRange(0, 99999); // 移动端兼容
-                document.execCommand('copy');
-                showCopyStatus('✓ 链接已复制到剪贴板');
-            } catch (err) {
-                showCopyStatus('✗ 复制失败，请手动复制', true);
-            }
-        }
-        
-        function showCopyStatus(message, isError = false) {
-            const status = document.getElementById('copy-status');
-            if (status) {
-                status.textContent = message;
-                status.style.color = isError ? '#e74c3c' : '#27ae60';
-                setTimeout(() => {
-                    status.textContent = '';
-                }, 3000);
-            }
-        }
-    </script>
+    <script src="/static/autosave.js"></script>
+    <script src="/static/copyurl.js"></script>
+{% endblock %}
 
-
-
-    
-</head>
-<body>
-    <div class="theme-switch-wrapper">
-        <label class="theme-switch" for="checkbox">
-            <input type="checkbox" id="checkbox" />
-            <div class="slider"></div>
-        </label>
-        <em>切换暗黑模式</em>
-    </div>
+{% block content %}
     <h2>FlashPaste 在线剪贴板</h2>
     {% if session.username %}
     <p>欢迎，{{ session.username }}！<a href="/logout">登出</a> | <a href="/myshares">我的分享</a></p>
@@ -202,5 +60,4 @@
         <div id="copy-status" style="color: #27ae60; font-size: 12px; margin-top: 5px;"></div>
     </form>
     {% endif %}
-</body>
-</html>
+{% endblock %}

@@ -1,20 +1,8 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的分享 - FlashPaste</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <script src="/static/theme.js"></script>
-</head>
-<body>
-    <div class="theme-switch-wrapper">
-        <label class="theme-switch" for="checkbox">
-            <input type="checkbox" id="checkbox" />
-            <div class="slider"></div>
-        </label>
-        <em>切换暗黑模式</em>
-    </div>
+{% extends "base.html" %}
+
+{% block title %}我的分享 - FlashPaste{% endblock %}
+
+{% block content %}
     <div style="text-align:center;">
         <h2>我的分享</h2>
         <div style="margin-bottom:10px;"><a href="/">返回首页</a></div>
@@ -55,7 +43,10 @@
             <div style="padding:24px;">暂无分享内容。</div>
         {% endfor %}
         </div>
-    
+    </div>
+{% endblock %}
+
+{% block scripts %}
     <script>
     function deleteShare(shareId) {
         if (confirm('确定要删除这个分享吗？此操作不可恢复。')) {
@@ -80,6 +71,4 @@
         }
     }
     </script>
-    </div>
-</body>
-</html>
+{% endblock %}

@@ -1,20 +1,8 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>用户登录 - FlashPaste</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <script src="/static/theme.js"></script>
-</head>
-<body>
-    <div class="theme-switch-wrapper">
-        <label class="theme-switch" for="checkbox">
-            <input type="checkbox" id="checkbox" />
-            <div class="slider"></div>
-        </label>
-        <em>切换暗黑模式</em>
-    </div>
+{% extends "base.html" %}
+
+{% block title %}用户登录 - FlashPaste{% endblock %}
+
+{% block content %}
     <h2>用户登录</h2>
     <form method="post">
         <input type="text" name="username" placeholder="用户名"><br>
@@ -25,5 +13,4 @@
     <p class="error-message">{{ error }}</p>
     {% endif %}
     <p>没有账号？<a href="/register">注册</a></p>
-</body>
-</html>
+{% endblock %}

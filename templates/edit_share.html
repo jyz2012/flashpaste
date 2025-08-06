@@ -1,20 +1,8 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>编辑分享内容 - FlashPaste</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <script src="/static/theme.js"></script>
-</head>
-<body>
-    <div class="theme-switch-wrapper">
-        <label class="theme-switch" for="checkbox">
-            <input type="checkbox" id="checkbox" />
-            <div class="slider"></div>
-        </label>
-        <em>切换暗黑模式</em>
-    </div>
+{% extends "base.html" %}
+
+{% block title %}编辑分享内容 - FlashPaste{% endblock %}
+
+{% block content %}
     <div style="text-align:center;">
         <h2>编辑分享内容</h2>
         <div style="margin-bottom:20px;">
@@ -67,5 +55,4 @@
             </div>
         </form>
     </div>
-</body>
-</html>
+{% endblock %}

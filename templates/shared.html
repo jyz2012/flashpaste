@@ -1,32 +1,28 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlashPaste 分享内容</title>
-    <link rel="stylesheet" href="/static/style.css">
+{% extends "base.html" %}
+
+{% block title %}FlashPaste 分享内容{% endblock %}
+
+{% block extra_css %}
     <link id="highlight-theme-default" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
     <link id="highlight-theme-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" disabled>
+{% endblock %}
+
+{% block extra_js %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="/static/theme.js"></script>
-</head>
-<body>
-    <div class="theme-switch-wrapper">
-        <label class="theme-switch" for="checkbox">
-            <input type="checkbox" id="checkbox" />
-            <div class="slider"></div>
-        </label>
-        <em>切换暗黑模式</em>
-    </div>
+{% endblock %}
+
+{% block content %}
     <h2>FlashPaste 分享内容{% if burn %}（阅后即焚）{% endif %}</h2>
     {% if title %}
     <h3 style="margin: 20px 0 10px 0; color: var(--text-color); text-align: center;">{{ title }}</h3>
     {% endif %}
     <pre><code>{{ content }}</code></pre>
-    <script>hljs.highlightAll();</script>
     <a href="/" class="center-link">返回首页</a>
     {% if burn_tip %}
     <p class="error-message">{{ burn_tip }}</p>
     {% endif %}
-</body>
-</html>
+{% endblock %}
+
+{% block scripts %}
+    <script>hljs.highlightAll();</script>
+{% endblock %}
