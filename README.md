@@ -14,7 +14,7 @@ A simple pastebin application built with Python.
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/your-username/flashpaste.git
+   git clone https://github.com/jyz2012/flashpaste.git
    cd flashpaste
    ```
 2. **Create a virtual environment with uv and activate it:**
