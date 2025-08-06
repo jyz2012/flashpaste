@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编辑分享 - FlashPaste</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/theme.js"></script>
+</head>
+<body>
+    <div class="theme-switch-wrapper">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox" />
+            <div class="slider"></div>
+        </label>
+        <em>切换暗黑模式</em>
+    </div>
+    <div style="text-align:center;">
+        <h2>编辑分享</h2>
+        <div style="margin-bottom:20px;">
+            <a href="/myshares">返回我的分享</a> | <a href="/">返回首页</a>
+        </div>
+        
+        <form method="post" style="max-width:600px;margin:0 auto;text-align:left;">
+            <div style="margin-bottom:15px;">
+                <label for="title" style="display:block;margin-bottom:5px;font-weight:bold;">分享标题:</label>
+                <input type="text" id="title" name="title" value="{{ title }}" placeholder="分享标题（可选）" style="width:100%;padding:8px;border:1px solid var(--input-border);border-radius:4px;background:var(--form-bg);color:var(--text-color);">
+            </div>
+            
+            <div style="margin-bottom:15px;">
+                <label for="content" style="display:block;margin-bottom:5px;font-weight:bold;">内容:</label>
+                <textarea id="content" name="content" rows="15" style="width:100%;padding:8px;border:1px solid var(--input-border);border-radius:4px;background:var(--form-bg);color:var(--text-color);font-family:var(--code-font);">{{ content }}</textarea>
+            </div>
+            
+            <div style="margin-bottom:15px;">
+                <label style="display:block;margin-bottom:5px;font-weight:bold;">设置:</label>
+                <div style="margin-bottom:10px;">
+                    <label>
+                        <input type="checkbox" name="burn_after_reading" value="1" {% if burn %}checked{% endif %}> 
+                        阅后即焚
+                    </label>
+                </div>
+                <div style="margin-bottom:10px;">
+                    <input type="text" name="password" value="{{ password }}" placeholder="访问密码（可选）" style="width:200px;padding:6px;border:1px solid var(--input-border);border-radius:4px;background:var(--form-bg);color:var(--text-color);">
+                </div>
+            </div>
+            
+            <div style="margin-bottom:20px;">
+                <label for="expire_hours" style="display:block;margin-bottom:5px;font-weight:bold;">过期时间:</label>
+                <select id="expire_hours" name="expire_hours" style="padding:6px;border:1px solid var(--input-border);border-radius:4px;background:var(--form-bg);color:var(--text-color);">
+                    <option value="">永不过期</option>
+                    <option value="1" {% if expire_hours == '1' %}selected{% endif %}>1小时后过期</option>
+                    <option value="24" {% if expire_hours == '24' %}selected{% endif %}>1天后过期</option>
+                    <option value="168" {% if expire_hours == '168' %}selected{% endif %}>1周后过期</option>
+                    <option value="720" {% if expire_hours == '720' %}selected{% endif %}>1个月后过期</option>
+                </select>
+                {% if expire_hours %}
+                <div style="font-size:12px;color:var(--text-color);opacity:0.7;margin-top:5px;">
+                    当前设置: {{ expire_hours }}小时后过期
+                </div>
+                {% endif %}
+            </div>
+            
+            <div style="text-align:center;">
+                <button type="submit" style="background:var(--button-bg);color:var(--button-text);padding:10px 20px;border:none;border-radius:4px;cursor:pointer;font-size:16px;margin-right:10px;">保存修改</button>
+                <a href="/myshares" style="background:#6c757d;color:white;padding:10px 20px;border-radius:4px;text-decoration:none;font-size:16px;">取消</a>
+            </div>
+        </form>
+        
+        <div style="margin-top:30px;padding:15px;background:var(--form-bg);border:1px solid var(--input-border);border-radius:8px;max-width:600px;margin-left:auto;margin-right:auto;">
+            <h3>分享链接预览:</h3>
+            <p><a href="/s/{{ share_id }}" target="_blank">{{ request.url_root }}s/{{ share_id }}</a></p>
+        </div>
+    </div>
+</body>
+</html>

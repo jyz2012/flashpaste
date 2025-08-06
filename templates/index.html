@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FlashPaste 在线剪贴板</title>
 
 
@@ -14,6 +15,95 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="/static/theme.js"></script>
+    <script>
+        // 自动保存功能
+        let autoSaveTimeout;
+        let lastSavedContent = '';
+        let lastSavedTitle = '';
+        
+        function updateShareFormData() {
+            const content = document.getElementById('content-textarea').value;
+            const title = document.getElementById('content-title').value;
+            document.getElementById('share-content').value = content;
+            document.getElementById('share-title').value = title;
+        }
+        
+        function showAutoSaveStatus(message, isError = false) {
+            const status = document.getElementById('auto-save-status');
+            status.textContent = message;
+            status.style.color = isError ? '#e74c3c' : '#27ae60';
+            setTimeout(() => {
+                status.textContent = '';
+            }, 3000);
+        }
+        
+        function autoSave() {
+            const content = document.getElementById('content-textarea').value;
+            const title = document.getElementById('content-title').value;
+            
+            // 检查内容是否有变化
+            if (content === lastSavedContent && title === lastSavedTitle) {
+                return;
+            }
+            
+            // 更新分享表单数据
+            updateShareFormData();
+            
+            // 发送自动保存请求
+            fetch('/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `content=${encodeURIComponent(content)}&title=${encodeURIComponent(title)}`
+            })
+            .then(response => {
+                if (response.ok) {
+                    lastSavedContent = content;
+                    lastSavedTitle = title;
+                    showAutoSaveStatus('✓ 已自动保存');
+                } else {
+                    showAutoSaveStatus('✗ 保存失败', true);
+                }
+            })
+            .catch(error => {
+                showAutoSaveStatus('✗ 保存失败', true);
+            });
+        }
+        
+        function scheduleAutoSave() {
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(autoSave, 2000); // 2秒后自动保存
+        }
+        
+        // 监听内容变化
+        document.addEventListener('DOMContentLoaded', function() {
+            const textarea = document.getElementById('content-textarea');
+            const titleInput = document.getElementById('content-title');
+            
+            // 初始化已保存的内容
+            lastSavedContent = textarea.value;
+            lastSavedTitle = titleInput.value;
+            
+            // 监听输入事件
+            textarea.addEventListener('input', scheduleAutoSave);
+            titleInput.addEventListener('input', scheduleAutoSave);
+            
+            // 监听内容变化，实时更新分享表单
+            textarea.addEventListener('input', updateShareFormData);
+            titleInput.addEventListener('input', updateShareFormData);
+            
+            // 页面离开前保存
+            window.addEventListener('beforeunload', function() {
+                const content = textarea.value;
+                const title = titleInput.value;
+                if (content !== lastSavedContent || title !== lastSavedTitle) {
+                    // 同步保存
+                    navigator.sendBeacon('/', `content=${encodeURIComponent(content)}&title=${encodeURIComponent(title)}`);
+                }
+            });
+        });
+    </script>
 
 
 
@@ -33,23 +123,39 @@
     {% else %}
     <p><a href="/login">登录</a> | <a href="/register">注册</a></p>
     {% endif %}
-    <form method="post">
-        <textarea name="content" rows="10" cols="50">{{ content }}</textarea><br>
+    <form method="post" id="main-form">
+        <div style="margin-bottom: 10px;">
+            <label for="content-title" style="display: block; margin-bottom: 5px; font-weight: bold;">标题:</label>
+            <input type="text" id="content-title" name="title" value="{{ title }}" placeholder="内容标题（可选）" style="width: 100%; max-width: 400px;">
+        </div>
+        <textarea id="content-textarea" name="content" rows="10" cols="50">{{ content }}</textarea><br>
         <button type="submit">保存</button>
+        <span id="auto-save-status" style="margin-left: 10px; color: #666; font-size: 12px;"></span>
     </form>
-    <form method="post" action="/share">
-        <input type="hidden" name="content" value="{{ content }}">
-        <label><input type="checkbox" name="burn_after_reading" value="1"> 阅后即焚</label>
-        <input type="text" name="password" placeholder="访问密码（可选）">
-        <button type="submit">生成分享链接</button>
+    <form method="post" action="/share" id="share-form">
+        <input type="hidden" id="share-content" name="content" value="{{ content }}">
+        <input type="hidden" id="share-title" name="title" value="{{ title }}">
+        <div style="margin-bottom: 10px;">
+            <label><input type="checkbox" name="burn_after_reading" value="1"> 阅后即焚</label>
+            <input type="text" name="password" placeholder="访问密码（可选）" style="margin-left: 10px;">
+        </div>
+        <div style="margin-bottom: 10px;">
+            <select name="expire_hours" style="margin-right: 10px;">
+                <option value="">永不过期</option>
+                <option value="1">1小时后过期</option>
+                <option value="24">1天后过期</option>
+                <option value="168">1周后过期</option>
+                <option value="720">1个月后过期</option>
+            </select>
+            <button type="submit">生成分享链接</button>
+        </div>
     </form>
+    
+    {% if share_url %}
     <form>
-        <p>当前内容：</p>
-        <pre><code>{{ content }}</code></pre>
-        <script>hljs.highlightAll();</script>
-        {% if share_url %}
-        <p>分享链接：<a href="{{ share_url }}" target="_blank">{{ share_url }}</a></p>
-        {% endif %}
+        <h3 style="margin-top: 0; color: var(--text-color);">分享链接已生成：</h3>
+        <p><a href="{{ share_url }}" target="_blank" style="word-break: break-all; color: var(--link-color);">{{ share_url }}</a></p>
     </form>
+    {% endif %}
 </body>
 </html>

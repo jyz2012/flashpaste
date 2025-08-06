@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FlashPaste 分享内容</title>
     <link rel="stylesheet" href="/static/style.css">
     <link id="highlight-theme-default" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
@@ -18,6 +19,9 @@
         <em>切换暗黑模式</em>
     </div>
     <h2>FlashPaste 分享内容{% if burn %}（阅后即焚）{% endif %}</h2>
+    {% if title %}
+    <h3 style="margin: 20px 0 10px 0; color: var(--text-color); text-align: center;">{{ title }}</h3>
+    {% endif %}
     <pre><code>{{ content }}</code></pre>
     <script>hljs.highlightAll();</script>
     <a href="/" class="center-link">返回首页</a>

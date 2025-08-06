@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的分享 - FlashPaste</title>
     <link rel="stylesheet" href="/static/style.css">
     <script src="/static/theme.js"></script>
@@ -18,18 +19,67 @@
         <h2>我的分享</h2>
         <div style="margin-bottom:10px;"><a href="/">返回首页</a></div>
         <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:16px;">
-        {% for share_id, content in shares %}
-            <div style="background:var(--form-bg);border:1px solid var(--input-border);border-radius:8px;box-shadow:0 2px 8px var(--form-shadow);padding:16px;width:260px;display:flex;flex-direction:column;align-items:flex-start;">
-                <a href="/s/{{ share_id }}" target="_blank" style="font-weight:bold;color:var(--link-color);word-break:break-all;">
-                    <div style="margin-top:8px;word-break:break-all;">
-                        {{ content[:40] }}{% if content|length > 40 %}...{% endif %}
-                    </div>
-                </a>
+        {% for share in shares %}
+            <div style="background:var(--form-bg);border:1px solid var(--input-border);border-radius:8px;box-shadow:0 2px 8px var(--form-shadow);padding:16px;width:300px;display:flex;flex-direction:column;">
+                <div style="margin-bottom:8px;">
+                    <a href="/s/{{ share.share_id }}" target="_blank" style="font-weight:bold;color:var(--link-color);text-decoration:none;">
+                        {{ share.title }}
+                    </a>
+                    <span style="font-size:12px;color:var(--text-color);opacity:0.7;margin-left:8px;">
+                        {% if share.status == '已过期' %}
+                            <span style="color:var(--error-color);">{{ share.status }}</span>
+                        {% else %}
+                            {{ share.status }}
+                        {% endif %}
+                    </span>
+                </div>
+                <div style="font-size:12px;color:var(--text-color);opacity:0.8;margin-bottom:8px;">
+                    创建时间: {{ share.created_at[:16] if share.created_at else '未知' }}
+                </div>
+                <div style="font-size:12px;color:var(--text-color);opacity:0.8;margin-bottom:8px;">
+                    访问次数: {{ share.view_count }}
+                    {% if share.has_password %} | 🔒 有密码{% endif %}
+                    {% if share.is_burn %} | 🔥 阅后即焚{% endif %}
+                </div>
+                {% if share.expires_at %}
+                <div style="font-size:12px;color:var(--text-color);opacity:0.8;margin-bottom:8px;">
+                    过期时间: {{ share.expires_at[:16] }}
+                </div>
+                {% endif %}
+                <div style="margin-top:auto;display:flex;gap:8px;">
+                    <a href="/edit_share/{{ share.share_id }}" style="background:var(--button-bg);color:var(--button-text);padding:4px 8px;border-radius:4px;text-decoration:none;font-size:12px;">编辑</a>
+                    <button onclick="deleteShare('{{ share.share_id }}')" style="background:var(--error-color);color:white;padding:4px 8px;border:none;border-radius:4px;cursor:pointer;font-size:12px;">删除</button>
+                </div>
             </div>
         {% else %}
             <div style="padding:24px;">暂无分享内容。</div>
         {% endfor %}
         </div>
+    
+    <script>
+    function deleteShare(shareId) {
+        if (confirm('确定要删除这个分享吗？此操作不可恢复。')) {
+            fetch('/delete_share/' + shareId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('删除成功');
+                    location.reload();
+                } else {
+                    alert('删除失败: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('删除失败: ' + error);
+            });
+        }
+    }
+    </script>
     </div>
 </body>
 </html>
