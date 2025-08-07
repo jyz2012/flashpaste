@@ -4,10 +4,14 @@ A simple pastebin application built with Python.
 
 ## Features
 
-- Create and share text pastes.
-- User authentication (login, register).
-- View shared pastes.
-- Password protection for pastes.
+- Create and share text snippets
+- User authentication (login, register)
+- View shared content
+- Burn after reading
+- Auto-save functionality
+- Dark/light theme switching
+- Expiration time setting
+- Edit shared content
 
 ## Installation
 
